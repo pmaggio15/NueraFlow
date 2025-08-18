@@ -10,6 +10,7 @@ import ai1 from "./ai1.png";
 import ai2 from "./ai2.png";
 import ai3 from "./ai3.png";
 
+
 export const assets = {
     logo,
     gradientBackground,

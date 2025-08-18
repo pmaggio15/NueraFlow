@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
+import Home from './pages/home'
 import Layout from './pages/Layout'
 import Dashboard from './pages/Dashboard'
 import WriteArticle from './pages/WriteArticle'
@@ -11,10 +11,9 @@ import RemoveObject from './pages/RemoveObject'
 import ReviewResume from './pages/ReviewResume'
 import Community from './pages/Community'
 
-
 const App = () => {
   return (
-    <div>
+    <div className="App">
       <Routes>
         <Route path='/' element={<Home />}/>
         <Route path='/ai' element={<Layout />}>
@@ -33,4 +32,3 @@ const App = () => {
 }
 
 export default App
-
