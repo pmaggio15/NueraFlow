@@ -9,14 +9,13 @@ const Hero = () => {
   return (
     <div 
       className="px-4 sm:px-20 xl:px-32 relative flex flex-col w-full justify-center items-center bg-cover bg-no-repeat bg-center min-h-screen"
-      style={{ backgroundImage: `url(${assets.gradientBackground})` }}
     >
       <div className="text-center text-black z-10">
         <h1 className="text-4xl sm:text-5xl md:text-6xl 2xl:text-7xl font-bold mx-auto leading-[1.2] mb-4 text-white drop-shadow-lg">
-          Create amazing content <br /> with <span style={{ color: '#a855f7' }}>AI tools</span>
+          Unlock creativity with<br /> powerful <span style={{ color: '#a855f7' }}>AI tools</span>
         </h1>
         <p className="mt-4 max-w-xs sm:max-w-lg 2xl:max-w-xl m-auto max-sm:text-xs text-white/90 drop-shadow-md">
-          Transform your content creation with our suite of premium AI tools. Write articles, generate images, and enhance your workflow.
+          Enhance your content creation with our suite of professional AI tools. Draft articles, generate visuals, and optimize workflows.
         </p>
         
        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mt-8 max-w-2xl mx-auto shadow-2xl">
@@ -59,3 +58,5 @@ const Hero = () => {
 }
 
 export default Hero
+
+
