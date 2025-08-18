@@ -1,25 +1,3 @@
-// import React from 'react'
-// import {PricingTable} from '@clerk/clerk-react'
-
-// const Plan = () => {
-//   return (
-//     <div className='max-w-2xl mx-auto z-20 my-30'>
-//       <div className='text-center'>
-//         <h2 className='text-slate-700 text-[42px]
-//             font-semibold'>
-//             Choose Your Plan
-//         </h2>
-//         <p className='text-gray-500 max-w-lg mx-auto'>Start for free and scale up as you grow. Find the perfect plan for your content creation needs.</p>
-//       </div>
-//       <div className='mt-14 max-sm:mx-8'>
-//         <PricingTable /> 
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default Plan
-
 import React from 'react'
 import { PricingTable } from '@clerk/clerk-react'
 import { Crown, Zap, Shield } from 'lucide-react'
@@ -43,15 +21,12 @@ const Plan = () => {
           
           {/* Main Heading */}
           <h2 className='text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tight'>
-            Choose Your
-            <span className='block mt-2 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
-              Perfect Plan
-            </span>
+            Pick Your <span className='mt-2 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>Plan</span>
           </h2>
           
           {/* Subheading */}
           <p className='text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed font-light mb-8'>
-            Start for free and scale up as you grow. Find the perfect plan for your 
+            Start for free and scale up as you grow. <br/> Find the perfect plan for your 
             <span className='font-semibold text-white'> content creation needs</span>
           </p>
           
