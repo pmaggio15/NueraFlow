@@ -1,4 +1,4 @@
-import logo from "./logo.svg";
+import logo from "./logo.png";
 import gradientBackground from "./gradientBackground.png";
 import user__group from "./user__group.png";
 import star__icon from "./star__icon.svg";
