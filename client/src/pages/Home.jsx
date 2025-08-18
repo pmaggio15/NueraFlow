@@ -1,26 +1,9 @@
-// import React from 'react'
-// import Navbar from '../components/Navbar'
-// import Hero from '../components/Hero'
-// import AiTools from '../components/AiTools'
-
-// const Home = () => {
-//   return (
-//       <>
-//         <Navbar />
-//         <Hero />
-//         <AiTools />
-//       </>
-//   )
-// }
-
-// export default Home
-
-
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import AiTools from '../components/AiTools'
 import { assets } from '../assets/assets'
+import Testimonial from '../components/Testimonial'
 
 const Home = () => {
   return (
@@ -31,6 +14,7 @@ const Home = () => {
       <Navbar />
       <Hero />
       <AiTools />
+      <Testimonial />
     </div>
   )
 }
