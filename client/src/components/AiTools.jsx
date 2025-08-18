@@ -9,7 +9,7 @@ const AiTools = () => {
     const { user } = useUser()
     
     return (
-        <section className='px-4 sm:px-8 lg:px-20 xl:px-32 py-16 lg:py-24 relative overflow-hidden'>
+        <section className='px-4 sm:px-8 lg:px-20 xl:px-32 pt-16 pb-8 lg:pt-24 lg:pb-12 relative overflow-hidden'>
             {/* Background decorative elements */}
             <div className='absolute top-0 left-1/4 w-72 h-72 bg-white/5 rounded-full blur-3xl'></div>
             <div className='absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl'></div>
@@ -100,7 +100,8 @@ const AiTools = () => {
                         <div className='absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-500/10 via-transparent to-transparent rounded-tr-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000'></div>
                     </div>
                 ))}
-            </div>            
+            </div> 
+             <div className="relative z-10 flex flex-wrap justify-center items-center gap-8 mt-20 pt-12 border-t border-white/10"></div>           
         </section>
     )
 }

@@ -48,9 +48,9 @@ const Testimonial = () => {
             ))}
         </div>
     );
-
+    
     return (
-        <section className="px-6 md:px-12 lg:px-24 xl:px-32 py-20 lg:py-32 relative overflow-hidden">
+        <section className="px-6 md:px-12 lg:px-24 xl:px-32 pt-8 pb-20 lg:pt-12 lg:pb-32 relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute top-1/4 left-0 w-64 h-64 bg-purple-400/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-blue-400/5 rounded-full blur-3xl"></div>
