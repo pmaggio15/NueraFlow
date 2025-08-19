@@ -8,3 +8,38 @@
 * { 
   font-family: "Outfit", sans-serif; 
 }
+
+.cl-headerTitle {
+  visibility: hidden !important;
+  position: relative !important;
+}
+
+.cl-headerTitle::after {
+  content: "Welcome to NueraFlow" !important;
+  visibility: visible !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  text-align: center !important;
+}
+
+.cl-headerSubtitle {
+  visibility: hidden !important;
+  position: relative !important;
+}
+
+.cl-headerSubtitle::after {
+  content: "Sign in to access your AI-powered content creation suite" !important;
+  visibility: visible !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  font-size: 16px !important;
+  color: #6b7280 !important;
+  text-align: center !important;
+}
