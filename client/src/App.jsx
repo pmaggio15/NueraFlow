@@ -11,12 +11,16 @@ import RemoveObject from './pages/RemoveObject'
 import ReviewResume from './pages/ReviewResume'
 import Community from './pages/Community'
 import {assets} from './assets/assets'
+import Checkout from './pages/Checkout'
+import Success from './pages/Success'
 
 const App = () => {
   return (
     <div className="App">
         <Routes>
           <Route path='/' element={<Home />}/>
+          <Route path='/checkout' element={<Checkout />}/>
+          <Route path='/success' element={<Success />}/> 
           <Route path='/ai' element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path='write-article' element={<WriteArticle />} />
