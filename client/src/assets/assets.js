@@ -10,32 +10,25 @@ import ai1 from "./ai1.png";
 import ai2 from "./ai2.png";
 import ai3 from "./ai3.png";
 
-// export const dummyCreationData = [
-//   {
-//     id: 1,
-//     type: 'blog-title',
-//     prompt: 'Generate a blog title for the keyword blog in the category Technology.',
-//     createdAt: '2025-08-20T00:00:00.000Z'
-//   },
-//   {
-//     id: 2,
-//     type: 'blog-title', 
-//     prompt: 'Generate a blog title for the keyword blog in the category General.',
-//     createdAt: '2025-08-20T00:00:00.000Z'
-//   },
-//   {
-//     id: 3,
-//     type: 'article',
-//     prompt: 'Write an article about AI With Coding in Short (500-800 word).',
-//     createdAt: '2025-08-20T00:00:00.000Z'
-//   }
-// ];
+
 export const dummyCreationData = [
   {
     id: 1,
     type: 'blog-title',
     prompt: 'Generate a blog title for the keyword blog in the category Technology.',
-    content: `Here are a few blog title options for a technology blog, playing with different angles: **General & Broad:** * The Tech Blog: News, Reviews, and Insights * TechTrend Today: Your Daily Dose of Tech * The Future is Now: Exploring the World of Technology * Tech Talk: Unpacking the Latest Innovations **More Specific & Intriguing:** * Decoding Tech: Making Sense of the Digital World * Beyond the Gadgets: The`,
+    content: `Here are a few blog title options for a technology blog, playing with different angles:
+
+**General & Broad:**
+- The Tech Blog: News, Reviews, and Insights
+- Technology Today: Your Daily Dose of Tech
+- The Future is Now: Exploring the World of Technology
+- Tech Talk: Unpacking the Latest Innovations
+
+**More Specific & Intriguing:**
+- Decoding Tech: Making Sense of the Digital World
+- Beyond the Gadgets: The Human Side of Technology
+- Code & Culture: Where Technology Meets Society
+- Innovation Insider: Breaking Down Complex Tech`,
     createdAt: '2025-07-01T00:00:00.000Z'
   },
   {
@@ -45,41 +38,43 @@ export const dummyCreationData = [
     content: `Here are some blog title options for a general category blog:
 
 **Broad & Versatile:**
-* The Daily Digest: Stories, Ideas & Inspiration
-* Life & More: A Collection of Thoughts
-* The Weekly Roundup: Everything You Need to Know
-* Beyond the Ordinary: Exploring Life's Many Facets
+- The Daily Digest: Stories, Ideas & Inspiration
+- Life & More: A Collection of Thoughts
+- The Weekly Roundup: Everything You Need to Know
+- Beyond the Ordinary: Exploring Life's Many Facets
 
 **Personal & Engaging:**
-* Coffee Talk: Random Thoughts & Daily Musings
-* The Modern Life: Navigating Today's World`,
+- Coffee Talk: Random Thoughts & Daily Musings
+- The Modern Life: Navigating Today's World
+- Simple Stories: Finding Beauty in Everyday Moments
+- Curious Minds: Questions, Answers, and Everything Between`,
     createdAt: '2025-07-01T00:00:00.000Z'
   },
   {
     id: 3,
     type: 'article',
     prompt: 'Write an article about AI With Coding in Short (500-800 word).',
-    content: `# AI and Coding: Revolutionizing Software Development
+    content: `Here's a comprehensive article about AI and coding in 500-800 words:
 
-Artificial Intelligence (AI) has fundamentally transformed the landscape of software development, creating new paradigms that enhance productivity, accuracy, and innovation. As we advance into an increasingly digital world, the integration of AI with coding practices has become not just beneficial but essential for modern developers.
+**Introduction:**
+- Artificial Intelligence has revolutionized software development
+- Modern developers now work alongside AI tools daily
+- This transformation enhances productivity and code quality
+- AI coding assistance is becoming essential for competitive development
 
-## The Rise of AI-Powered Development Tools
+**AI-Powered Development Tools:**
+- GitHub Copilot for intelligent code completion
+- ChatGPT and Claude for coding assistance and debugging
+- Tabnine for context-aware code suggestions
+- CodeT5 for code summarization and documentation
+- DeepCode for automated code review and bug detection
 
-Modern development environments now feature AI assistants that can generate code, suggest improvements, and even debug complex problems. Tools like GitHub Copilot, ChatGPT, and various IDE extensions have democratized coding by making it more accessible to beginners while simultaneously boosting the efficiency of experienced developers.
-
-These AI tools excel at pattern recognition, allowing them to understand coding contexts and provide relevant suggestions. They can complete functions, generate boilerplate code, and even translate natural language descriptions into working code snippets.
-
-## Benefits of AI in Coding
-
-**Enhanced Productivity**: AI can handle routine coding tasks, allowing developers to focus on higher-level problem-solving and creative solutions.
-
-**Error Reduction**: AI-powered linters and debuggers can identify potential issues before they become problems, improving code quality and reducing debugging time.
-
-**Learning Acceleration**: New programmers can learn faster by observing AI-generated code and understanding best practices through practical examples.
-
-## The Future Outlook
-
-As AI continues to evolve, we can expect even more sophisticated integration with development workflows, making coding more intuitive and powerful than ever before.`,
+**Key Benefits for Developers:**
+- Enhanced Productivity: AI handles routine coding tasks efficiently
+- Error Reduction: Advanced linting and bug detection capabilities
+- Learning Acceleration: New developers learn through AI examples
+- Code Quality: Consistent patterns and best practice enforcement
+- Time Savings: Automated documentation and testing generation`,
     createdAt: '2025-07-01T00:00:00.000Z'
   }
 ];

@@ -6,8 +6,17 @@ import { assets } from '../assets/assets'
 import Testimonial from '../components/Testimonial'
 import Plan from '../components/Plan'
 import Footer from '../components/Footer'
+import { useUser, Protect } from '@clerk/clerk-react';
 
 const Home = () => {
+  const { user } = useUser();
+
+  // Clear localStorage plan to rely on Clerk billing only
+  React.useEffect(() => {
+    localStorage.removeItem('userPlan');
+    localStorage.removeItem('planUpdatedAt');
+  }, []);
+
   return (
     <div 
       className="min-h-screen bg-cover bg-no-repeat bg-center"

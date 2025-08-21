@@ -43,3 +43,7 @@
   color: #6b7280 !important;
   text-align: center !important;
 }
+
+.reset__tw, .reset__tw * {
+  all: revert !important
+}

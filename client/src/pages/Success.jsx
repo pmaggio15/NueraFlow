@@ -1,20 +1,71 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useUser } from '@clerk/clerk-react'
 import { Check, Sparkles } from 'lucide-react'
 import { assets } from '../assets/assets'
 
 const Success = () => {
   const navigate = useNavigate()
+  const { user } = useUser()
+  const [isUpdatingPlan, setIsUpdatingPlan] = useState(true)
 
   useEffect(() => {
-    // Redirect to home page after 5 seconds
+    const updateUserPlan = async () => {
+      try {
+        if (user) {
+          console.log('Updating user plan to premium...')
+          console.log('Current user:', user)
+          
+          // Try the correct Clerk method for updating metadata
+          await user.update({
+            unsafeMetadata: {
+              ...user.unsafeMetadata,
+              plan: 'premium',
+              subscriptionDate: new Date().toISOString(),
+              subscriptionStatus: 'active'
+            }
+          })
+          
+          console.log('User plan updated to premium successfully!')
+          console.log('New metadata:', user.unsafeMetadata)
+          setIsUpdatingPlan(false)
+        }
+      } catch (error) {
+        console.error('Error updating user plan:', error)
+        
+        // Try alternative method if first one fails
+        try {
+          console.log('Trying alternative update method...')
+          
+          // Use Clerk's setMetadata method if available
+          if (user.setUnsafeMetadata) {
+            await user.setUnsafeMetadata({
+              plan: 'premium',
+              subscriptionDate: new Date().toISOString(),
+              subscriptionStatus: 'active'
+            })
+            console.log('Alternative method worked!')
+          }
+        } catch (alternativeError) {
+          console.error('Alternative method also failed:', alternativeError)
+        }
+        
+        setIsUpdatingPlan(false)
+      }
+    }
+
+    if (user) {
+      updateUserPlan()
+    }
+
+    // Redirect to home after 5 seconds
     const timer = setTimeout(() => {
+      console.log('Redirecting to home page...')
       navigate('/')
     }, 5000)
 
-    // Cleanup timer if component unmounts
     return () => clearTimeout(timer)
-  }, [navigate])
+  }, [navigate, user])
 
   return (
     <div 
@@ -32,7 +83,11 @@ const Success = () => {
         <div className="mb-8 relative">
           <div className="w-32 h-32 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center mx-auto shadow-2xl border border-white/30">
             <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center relative overflow-hidden">
-              <Check className="w-12 h-12 text-white animate-bounce" />
+              {isUpdatingPlan ? (
+                <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Check className="w-12 h-12 text-white animate-bounce" />
+              )}
               {/* Sparkle effects */}
               <Sparkles className="absolute top-2 right-2 w-4 h-4 text-white animate-pulse" />
               <Sparkles className="absolute bottom-2 left-2 w-3 h-3 text-white animate-pulse delay-300" />
@@ -45,7 +100,7 @@ const Success = () => {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-lg md:text-xl font-medium text-green-400 uppercase tracking-wider">
-              Payment Confirmed
+              {isUpdatingPlan ? 'Activating Premium' : 'Payment Confirmed'}
             </span>
             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse delay-300"></div>
           </div>
@@ -62,8 +117,12 @@ const Success = () => {
         
         {/* Professional Subtitle */}
         <p className="text-xl md:text-2xl text-white/80 font-light mb-8 leading-relaxed max-w-xl mx-auto">
-          Your subscription is now active. Start creating with unlimited access to all 
-          <span className="font-semibold text-white"> professional AI tools</span>.
+          {isUpdatingPlan ? (
+            <>Updating your account to premium access...</>
+          ) : (
+            <>Your subscription is now active. Start creating with unlimited access to all 
+            <span className="font-semibold text-white"> professional AI tools</span>.</>
+          )}
         </p>
         
         {/* Features Preview */}
@@ -96,22 +155,24 @@ const Success = () => {
         
         {/* Loading Animation */}
         <div className="mt-6 w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-          <div className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full animate-pulse" 
-               style={{ 
-                 width: '100%',
-                 animation: 'expand 5s linear forwards'
-               }}>
+          <div className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full expanding-bar">
           </div>
         </div>
       </div>
       
       {/* CSS Animation */}
-      <style jsx>{`
-        @keyframes expand {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes expand {
+            from { width: 0%; }
+            to { width: 100%; }
+          }
+          
+          .expanding-bar {
+            animation: expand 5s linear forwards;
+          }
+        `}
+      </style>
     </div>
   )
 }
