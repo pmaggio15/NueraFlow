@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
-import { Check, Sparkles } from 'lucide-react'
+import { Check, Sparkles, ArrowRight } from 'lucide-react'
 import { assets } from '../assets/assets'
 
 const Success = () => {
@@ -57,15 +57,13 @@ const Success = () => {
     if (user) {
       updateUserPlan()
     }
+  }, [user])
 
-    // Redirect to home after 5 seconds
-    const timer = setTimeout(() => {
-      console.log('Redirecting to home page...')
-      navigate('/')
-    }, 5000)
-
-    return () => clearTimeout(timer)
-  }, [navigate, user])
+  // Navigate to home page
+  const handleGoHome = () => {
+    console.log('Navigating to home page...')
+    navigate('/', { replace: true })
+  }
 
   return (
     <div 
@@ -148,31 +146,15 @@ const Success = () => {
           </div>
         </div>
         
-        {/* Countdown */}
-        <div className="text-white/60 text-lg">
-          <p>Redirecting to homepage in <span className="font-bold text-white">5</span> seconds...</p>
-        </div>
-        
-        {/* Loading Animation */}
-        <div className="mt-6 w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-          <div className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full expanding-bar">
-          </div>
-        </div>
+        {/* Go to Home Button */}
+        <button 
+          onClick={handleGoHome}
+          className="group flex items-center justify-center gap-3 mx-auto px-8 py-4 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-xl font-semibold text-lg hover:from-green-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          Go to Home
+          <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+        </button>
       </div>
-      
-      {/* CSS Animation */}
-      <style>
-        {`
-          @keyframes expand {
-            from { width: 0%; }
-            to { width: 100%; }
-          }
-          
-          .expanding-bar {
-            animation: expand 5s linear forwards;
-          }
-        `}
-      </style>
     </div>
   )
 }
