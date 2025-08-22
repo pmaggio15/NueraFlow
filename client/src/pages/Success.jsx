@@ -14,9 +14,7 @@ const Success = () => {
       try {
         if (user) {
           console.log('Updating user plan to premium...')
-          console.log('Current user:', user)
           
-          // Try the correct Clerk method for updating metadata
           await user.update({
             unsafeMetadata: {
               ...user.unsafeMetadata,
@@ -27,29 +25,10 @@ const Success = () => {
           })
           
           console.log('User plan updated to premium successfully!')
-          console.log('New metadata:', user.unsafeMetadata)
           setIsUpdatingPlan(false)
         }
       } catch (error) {
         console.error('Error updating user plan:', error)
-        
-        // Try alternative method if first one fails
-        try {
-          console.log('Trying alternative update method...')
-          
-          // Use Clerk's setMetadata method if available
-          if (user.setUnsafeMetadata) {
-            await user.setUnsafeMetadata({
-              plan: 'premium',
-              subscriptionDate: new Date().toISOString(),
-              subscriptionStatus: 'active'
-            })
-            console.log('Alternative method worked!')
-          }
-        } catch (alternativeError) {
-          console.error('Alternative method also failed:', alternativeError)
-        }
-        
         setIsUpdatingPlan(false)
       }
     }
@@ -59,10 +38,9 @@ const Success = () => {
     }
   }, [user])
 
-  // Navigate to home page
-  const handleGoHome = () => {
-    console.log('Navigating to home page...')
-    navigate('/', { replace: true })
+  // Navigate to dashboard
+  const handleGoToDashboard = () => {
+    navigate('/ai', { replace: true })
   }
 
   return (
@@ -146,13 +124,23 @@ const Success = () => {
           </div>
         </div>
         
-        {/* Go to Home Button */}
+        {/* Go to Dashboard Button */}
         <button 
-          onClick={handleGoHome}
-          className="group flex items-center justify-center gap-3 mx-auto px-8 py-4 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-xl font-semibold text-lg hover:from-green-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+          onClick={handleGoToDashboard}
+          disabled={isUpdatingPlan}
+          className="group flex items-center justify-center gap-3 mx-auto px-8 py-4 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-xl font-semibold text-lg hover:from-green-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Go to Home
-          <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+          {isUpdatingPlan ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Setting up your account...
+            </>
+          ) : (
+            <>
+              Go to Dashboard
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
         </button>
       </div>
     </div>

@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { dummyCreationData } from "../assets/assets";
 import { Gem, Sparkles } from "lucide-react";
-import { Protect } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import CreationGroup from "../components/CreationGroup";
 
 const Dashboard = () => {
+  const { user } = useUser();
   const [creations, setCreations] = useState([]);
 
   useEffect(() => {
     setCreations(dummyCreationData);
   }, []);
+
+  // Get current plan from user metadata
+  const getCurrentPlan = () => {
+    return user?.unsafeMetadata?.plan || 'free';
+  };
+
+  const isPremium = getCurrentPlan() === 'premium';
 
   // Group by type
   const grouped = creations.reduce((acc, item) => {
@@ -40,10 +48,14 @@ const Dashboard = () => {
           <div className="text-slate-600">
             <p className="text-sm">Active Plan</p>
             <h2 className="text-xl font-semibold">
-              <Protect plan="premium" fallback="Free">Premium</Protect>
+              {isPremium ? 'Premium' : 'Free'}
             </h2>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#ff61c5] to-[#9e53ee] text-white flex justify-center items-center">
+          <div className={`w-10 h-10 rounded-lg text-white flex justify-center items-center ${
+            isPremium 
+              ? 'bg-gradient-to-br from-[#ff61c5] to-[#9e53ee]' 
+              : 'bg-gradient-to-br from-[#10b981] to-[#059669]'
+          }`}>
             <Gem className="w-5 h-5" />
           </div>
         </div>

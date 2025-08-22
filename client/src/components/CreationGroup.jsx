@@ -19,7 +19,7 @@ const CreationGroup = ({ type, items }) => {
       {/* Group header */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full p-5 bg-white border border-gray-200 rounded-xl flex items-center justify-between hover:shadow-lg transition"
+        className="w-full p-5 bg-white border border-gray-200 rounded-xl flex items-center justify-between hover:shadow-lg transition cursor-pointer"
       >
         <div className="text-left">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -46,7 +46,7 @@ const CreationGroup = ({ type, items }) => {
                   key={i}
                   onClick={() => setActiveIdx(i)}
                   className={[
-                    "h-8 w-8 rounded-full text-sm font-medium border transition",
+                    "h-8 w-8 rounded-full text-sm font-medium border transition cursor-pointer",
                     i === activeIdx
                       ? "bg-blue-600 text-white border-blue-600"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"

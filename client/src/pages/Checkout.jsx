@@ -11,7 +11,6 @@ const Checkout = () => {
   const [showTestCard, setShowTestCard] = useState(false)
   
   const { plan = 'premium', price = 25, features = [] } = location.state || {}
-
   const [formData, setFormData] = useState({
     email: '',
     cardNumber: '',
@@ -20,6 +19,9 @@ const Checkout = () => {
     name: '',
     country: 'US'
   })
+
+  // Set to false for production checkout flow, true for testing
+  const isTestingMode = false
 
   // Auto-fill user data from Clerk when component mounts
   useEffect(() => {
@@ -43,19 +45,50 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsProcessing(true)
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false)
-      // Redirect to success page after successful payment
-      navigate('/success')
-    }, 2000)
+
+    console.log('Checkout - isTestingMode:', isTestingMode)
+
+    if (isTestingMode) {
+      console.log('In testing mode - updating plan immediately')
+      // In testing mode, immediately update the plan and go to dashboard
+      try {
+        await user.update({
+          unsafeMetadata: {
+            ...user.unsafeMetadata,
+            plan: 'premium',
+            subscriptionDate: new Date().toISOString(),
+            subscriptionStatus: 'active',
+            testingMode: true
+          }
+        })
+        
+        console.log('Plan updated in checkout, navigating to dashboard')
+        
+        // Simulate processing delay for UX
+        setTimeout(() => {
+          setIsProcessing(false)
+          navigate('/ai') // Go directly to dashboard in testing mode
+        }, 1500)
+        
+      } catch (error) {
+        console.error('Error updating plan in testing mode:', error)
+        setIsProcessing(false)
+      }
+    } else {
+      console.log('In production mode - going to success page')
+      // Production mode - simulate payment processing then go to success page
+      setTimeout(() => {
+        setIsProcessing(false)
+        navigate('/success') // Go to success page in production
+      }, 2000)
+    }
   }
 
   const handleBack = () => {
     navigate(-1)
   }
 
+  // If plan is free, show free plan confirmation
   if (plan === 'free') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center py-12 px-4">
@@ -116,7 +149,9 @@ const Checkout = () => {
                 <span>Total</span>
                 <span>${price}.00/month</span>
               </div>
-              <p className="text-sm text-gray-500 mt-2">Billed monthly. Cancel anytime.</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Billed monthly. Cancel anytime.
+              </p>
             </div>
 
             <div className="mt-6 p-4 bg-blue-50 rounded-xl">
@@ -124,11 +159,12 @@ const Checkout = () => {
                 <Shield className="w-5 h-5" />
                 <span className="font-semibold">30-Day Money Back Guarantee</span>
               </div>
-              <p className="text-blue-600 text-sm">Not satisfied? Get a full refund within 30 days.</p>
+              <p className="text-blue-600 text-sm">
+                Not satisfied? Get a full refund within 30 days.
+              </p>
             </div>
           </div>
           
-
           {/* Payment Form */}
           <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
             <div className="flex items-center gap-2 mb-6">
@@ -136,7 +172,7 @@ const Checkout = () => {
               <h2 className="text-2xl font-bold text-gray-900">Payment Details</h2>
             </div>
 
-            {/* Collapsible Test Card Banner */}
+            {/* Test Card Info Banner (Optional - for demo purposes) */}
             <div className="mb-6">
               <button
                 type="button"
@@ -146,7 +182,7 @@ const Checkout = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="font-semibold text-yellow-800">Test Mode - Click for test card details</span>
+                    <span className="font-semibold text-yellow-800">Demo Mode - Click for test card details</span>
                   </div>
                   {showTestCard ? (
                     <ChevronUp className="w-5 h-5 text-yellow-700" />
@@ -193,7 +229,7 @@ const Checkout = () => {
                           name: user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Test User',
                           email: user?.primaryEmailAddress?.emailAddress || 'test@example.com'
                         }))
-                        setShowTestCard(false) // Optionally close after auto-fill
+                        setShowTestCard(false)
                       }}
                       className="mt-3 w-full py-2 px-4 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-lg font-medium transition-colors"
                     >
@@ -301,7 +337,7 @@ const Checkout = () => {
                 {isProcessing ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Processing...
+                    Processing Payment...
                   </div>
                 ) : (
                   `Subscribe for $${price}.00/month`
@@ -309,8 +345,7 @@ const Checkout = () => {
               </button>
 
               <p className="text-xs text-gray-500 text-center">
-                By subscribing, you agree to our Terms of Service and Privacy Policy.
-                Your subscription will auto-renew monthly.
+                By subscribing, you agree to our Terms of Service and Privacy Policy. Your subscription will auto-renew monthly.
               </p>
             </form>
           </div>
