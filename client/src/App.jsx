@@ -13,8 +13,16 @@ import Community from './pages/Community'
 import {assets} from './assets/assets'
 import Checkout from './pages/Checkout'
 import Success from './pages/Success'
+import { useAuth } from '@clerk/clerk-react'
+import { useEffect } from 'react'
 
 const App = () => {
+
+  const {getToken} = useAuth()
+  useEffect(() => {
+    getToken().then((token)=> console.log(token));
+  }, [])
+
   return (
     <div className="App">
         <Routes>
