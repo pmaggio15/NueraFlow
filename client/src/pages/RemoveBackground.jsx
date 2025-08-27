@@ -576,82 +576,79 @@ const RemoveBackground = () => {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-hidden">
-              {processedImage ? (
-                <div className="h-full p-8">
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1 grid md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <h3 className="font-semibold text-gray-900 text-center">Original</h3>
-                        <div className="bg-gray-50 rounded-2xl p-4 h-full flex items-center justify-center">
-                          <img
-                            src={selectedImage.preview}
-                            alt="Original"
-                            className="max-w-full max-h-full object-contain rounded-xl shadow-md"
-                          />
+                <div className="flex-1 overflow-hidden">
+                  {processedImage?.url ? (
+                    <div className="h-full p-8">
+                      <div className="h-full flex flex-col">
+                        {/* Before/After */}
+                        <div className="flex-1 grid md:grid-cols-2 gap-6">
+                          <div className="space-y-3">
+                            <h3 className="font-semibold text-gray-900 text-center">Original</h3>
+                            <div className="bg-gray-50 rounded-2xl p-4 h-full flex items-center justify-center">
+                              <img
+                                src={selectedImage.preview}
+                                alt="Original"
+                                className="max-w-full max-h-full object-contain rounded-xl shadow-md"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-3">
+                            <h3 className="font-semibold text-gray-900 text-center">Background Removed</h3>
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 h-full flex items-center justify-center relative">
+                              <div
+                                className="absolute inset-4 opacity-20"
+                                style={{
+                                  backgroundImage:
+                                    'conic-gradient(#f3f4f6 0deg, #f3f4f6 90deg, #e5e7eb 90deg, #e5e7eb 180deg, #f3f4f6 180deg, #f3f4f6 270deg, #e5e7eb 270deg)',
+                                  backgroundSize: '20px 20px',
+                                }}
+                              />
+                              <img
+                                src={processedImage.url}
+                                alt="Processed"
+                                className="max-w-full max-h-full object-contain rounded-xl shadow-md relative z-10"
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="space-y-3">
-                        <h3 className="font-semibold text-gray-900 text-center">
-                          Background Removed
-                        </h3>
-                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 h-full flex items-center justify-center relative">
-                          {/* checkerboard */}
-                          <div
-                            className="absolute inset-4 opacity-20"
-                            style={{
-                              backgroundImage:
-                                'conic-gradient(#f3f4f6 0deg, #f3f4f6 90deg, #e5e7eb 90deg, #e5e7eb 180deg, #f3f4f6 180deg, #f3f4f6 270deg, #e5e7eb 270deg)',
-                              backgroundSize: '20px 20px',
-                            }}
-                          />
-                          <img
-                            src={processedImage.url}
-                            alt="Processed"
-                            className="max-w-full max-h-full object-contain rounded-xl shadow-md relative z-10"
-                          />
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="mt-6 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-4 border border-red-100">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Eraser className="w-4 h-4 text-red-600" />
-                        <span className="font-semibold text-gray-900">Processing Complete</span>
-                      </div>
-                      <div className="text-sm space-y-1">
-                        <div>
-                          <span className="font-medium">Original:</span>{' '}
-                          {processedImage.originalName}
-                        </div>
-                        <div>
-                          <span className="font-medium">Processed:</span>{' '}
-                          {new Date(processedImage.timestamp).toLocaleString()}
-                        </div>
-                        <div>
-                          <span className="font-medium">Format:</span> PNG with transparent
-                          background
-                        </div>
-                      </div>
+        {/* Info card */}
+        <div className="mt-6 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-4 border border-red-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Eraser className="w-4 h-4 text-red-600" />
+                    <span className="font-semibold text-gray-900">Processing Complete</span>
+                  </div>
+                  <div className="text-sm space-y-1">
+                    <div>
+                      <span className="font-medium">Original:</span> {processedImage.originalName}
+                    </div>
+                    <div>
+                      <span className="font-medium">Processed:</span>{' '}
+                      {new Date(processedImage.timestamp).toLocaleString()}
+                    </div>
+                    <div>
+                      <span className="font-medium">Format:</span> PNG with transparent background
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="h-full flex items-center justify-center p-8">
-                  <div className="text-center max-w-sm">
-                    <div className="p-6 bg-gray-100 rounded-full w-fit mx-auto mb-6">
-                      <Eraser className="w-12 h-12 text-gray-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Ready to Remove</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      Upload an image to automatically remove its background using AI technology
-                    </p>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
+            ) : (
+            <div className="h-full flex items-center justify-center p-8">
+              <div className="text-center max-w-sm">
+                <div className="p-6 bg-gray-100 rounded-full w-fit mx-auto mb-6">
+                  <Eraser className="w-12 h-12 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Ready to Remove</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Upload an image to automatically remove its background using AI technology
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
           </div>
-          {/* /Right */}
         </div>
       </div>
     </div>
@@ -659,3 +656,4 @@ const RemoveBackground = () => {
 };
 
 export default RemoveBackground;
+
