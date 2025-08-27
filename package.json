@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@neondatabase/serverless": "^1.0.1",
-    "react-router-dom": "^6.28.0"
-  }
-}
