@@ -1,5 +1,11 @@
-import { Hash, Sparkles, Copy, RefreshCw, Lightbulb, Target } from 'lucide-react'
-import React, { useState } from 'react'
+import { Hash, Sparkles, Copy, RefreshCw, Lightbulb, Target } from 'lucide-react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import Markdown from 'react-markdown';
+import { useAuth } from '@clerk/clerk-react';
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const BlogTitles = () => {
   const blogCategories = [
@@ -18,46 +24,57 @@ const BlogTitles = () => {
   const [generatedTitles, setGeneratedTitles] = useState([])
   const [isGenerating, setIsGenerating] = useState(false)
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
+  const { getToken } = useAuth()
+
+  const onSubmitHandler = async (e)=>{
+        e.preventDefault();
+        try {
+           setIsGenerating(true)
+           const prompt = `Generate a blog title for the keyword ${input} in the category ${selectedCategory.name}`
+  
+           const { data } = await axios.post('/api/ai/generate-blog-title', {prompt}, {headers: {Authorization: `Bearer ${await getToken()}`}})
+  
+           if (data.success) {
+            const titlesArray = data.content.split('\n').filter(title => title.trim());
+            setGeneratedTitles(titlesArray);
+          }
+          else{
+            toast.error(data.message)
+           }
+        } catch (error) {
+          toast.error(error.message)
+        }
+        setIsGenerating(false)
+      }
+
+      const regenerateTitles = async () => {
+  if (!input.trim() || !selectedCategory) return;
+  
+  try {
+    setIsGenerating(true);
+    const prompt = `Generate a blog title for the keyword ${input} in the category ${selectedCategory.name}`;
     
-    if (!selectedCategory) {
-      alert('Please select a content category');
-      return;
+    const { data } = await axios.post('/api/ai/generate-blog-title', {prompt}, {headers: {Authorization: `Bearer ${await getToken()}`}});
+
+    if (data.success) {
+    const titlesArray = data.content.split('\n').filter(title => title.trim());
+    setGeneratedTitles(titlesArray);
+    } else {
+      toast.error(data.message);
     }
-    
-    setIsGenerating(true)
-    
-    console.log('Generating titles for:', { input, selectedCategory: selectedCategory.name })
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2500))
-    
-    const mockTitles = [
-      `The Ultimate Guide to ${input}: Everything You Need to Know`,
-      `${input}: 10 Essential Tips for Beginners`,
-      `How ${input} is Revolutionizing the ${selectedCategory.name} Industry`,
-      `The Future of ${input}: Trends and Predictions for 2024`,
-      `Mastering ${input}: A Step-by-Step Approach`,
-      `Why ${input} Matters More Than Ever`,
-      `${input} vs Traditional Methods: A Complete Comparison`,
-      `The Hidden Benefits of ${input} You Never Knew About`,
-      `From Zero to Hero: Your ${input} Success Story`,
-      `${input}: Common Mistakes and How to Avoid Them`
-    ]
-    
-    setGeneratedTitles(mockTitles)
-    setIsGenerating(false)
+  } catch (error) {
+    toast.error(error.message);
   }
+  setIsGenerating(false);
+};
 
-  const copyTitle = (title) => {
-    navigator.clipboard.writeText(title)
-  }
-
-  const regenerateTitles = () => {
-    setGeneratedTitles([])
-    onSubmitHandler(new Event('submit'))
-  }
+const copyTitle = (title) => {
+  navigator.clipboard.writeText(title).then(() => {
+    toast.success('Title copied to clipboard!');
+  }).catch(() => {
+    toast.error('Failed to copy title');
+  });
+};
 
   return (
     <div className='min-h-full p-6 bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50'>
@@ -233,7 +250,11 @@ const BlogTitles = () => {
                             <span className='flex-shrink-0 w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5'>
                               {index + 1}
                             </span>
-                            <p className='text-gray-800 font-medium leading-relaxed'>{title}</p>
+                             <div className='text-gray-800 font-medium leading-relaxed prose prose-sm max-w-none [&>*]:mb-0'>
+                              <Markdown>
+                                {title}
+                              </Markdown>
+                            </div>
                           </div>
                           <button
                             onClick={() => copyTitle(title)}
