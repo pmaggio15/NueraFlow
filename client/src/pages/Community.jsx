@@ -1,14 +1,33 @@
-import { useUser } from '@clerk/clerk-react'
+import { useUser, useAuth } from '@clerk/clerk-react'
 import React, { useEffect, useState } from 'react'
-import { dummyCreationData } from '../assets/assets'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 import { Heart, Users, Sparkles, TrendingUp } from 'lucide-react'
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 
 const Community = () => {
   const [creations, setCreations] = useState([])
+  const [loading, setLoading] = useState(true)
   const { user } = useUser()
+  const { getToken } = useAuth()
 
   const fetchCreations = async () => {
-    setCreations(dummyCreationData)
+    try {
+      const token = await getToken()
+      const { data } = await axios.get('/api/user/get-published-creations', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      })
+      if (data?.success) {
+        setCreations(data.creations || [])
+      } else {
+        toast.error(data?.message || 'Failed to fetch creations')
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || 'Request failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -17,9 +36,23 @@ const Community = () => {
     }
   }, [user])
 
-  const handleLike = (creationId) => {
-    // Toggle like functionality - you can implement this with your backend
-    console.log('Liked creation:', creationId)
+  const handleLike = async (creationId) => {
+    try {
+      const token = await getToken()
+      const { data } = await axios.post(
+        '/api/user/toggle-like-creation',
+        { id: creationId },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      )
+      if (data?.success) {
+        await fetchCreations()
+        toast.success(data.message || 'Updated')
+      } else {
+        toast.error(data?.message || 'Could not update like')
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || 'Request failed')
+    }
   }
 
   return (
@@ -98,14 +131,18 @@ const Community = () => {
 
           {/* Grid Content */}
           <div className='p-8'>
-            {creations.length > 0 ? (
+            {loading ? (
+              <div className='h-96 flex items-center justify-center'>
+                <span className='w-10 h-10 my-1 rounded-full border-4 border-gray-300 border-t-transparent animate-spin'></span>
+              </div>
+            ) : creations.length > 0 ? (
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                 {creations.map((creation, index) => (
                   <div key={creation.id || index} className='group relative bg-white/60 rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-xl hover:scale-105'>
                     {/* Image Container with fixed aspect ratio */}
                     <div className='relative aspect-square overflow-hidden'>
                       <img 
-                        src={creation.image} 
+                        src={creation.image || creation.content} 
                         alt={creation.prompt || "AI Creation"} 
                         className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110' 
                       />
@@ -149,7 +186,7 @@ const Community = () => {
                     <div className='p-4'>
                       <div className='flex items-center justify-between'>
                         <div className='text-xs text-gray-500'>
-                          {new Date(creation.createdAt).toLocaleDateString()}
+                          {new Date(creation.createdAt || creation.created_at).toLocaleDateString()}
                         </div>
                         <div className='flex items-center gap-1 text-gray-400'>
                           <Heart className='w-3 h-3' />

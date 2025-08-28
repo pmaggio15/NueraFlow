@@ -1,15 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { dummyCreationData } from "../assets/assets";
 import { Gem, Sparkles } from "lucide-react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import CreationGroup from "../components/CreationGroup";
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const Dashboard = () => {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const [creations, setCreations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getDashboardData = async () => {
+    try {
+      const { data } = await axios.get('/api/user/get-user-creations', {
+        headers: { Authorization: `Bearer ${await getToken()}` }
+      });
+
+      if (data.success) {
+        setCreations(data.creations);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    setCreations(dummyCreationData);
+    getDashboardData();
   }, []);
 
   // Get current plan from user metadata
@@ -62,12 +84,18 @@ const Dashboard = () => {
       </div>
 
       {/* Grouped dropdowns */}
-      <div className="space-y-4 mt-6">
-        <p className="mb-2">Recent Creations</p>
-        {groupsToShow.map((type) => (
-          <CreationGroup key={type} type={type} items={grouped[type]} />
-        ))}
-      </div>
+      {loading ? (
+        <div className='flex justify-center items-center h-3/4'>
+          <div className='animate-spin rounded-full h-11 w-11 border-3 border-purple-500 border-t-transparent'></div>
+        </div>
+      ) : (
+        <div className="space-y-4 mt-6">
+          <p className="mb-2">Recent Creations</p>
+          {groupsToShow.map((type) => (
+            <CreationGroup key={type} type={type} items={grouped[type]} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

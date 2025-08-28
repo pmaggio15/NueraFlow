@@ -1,136 +1,113 @@
-import { FileText, Sparkles, RefreshCw, Upload, Target, CheckCircle, AlertCircle, TrendingUp, User } from 'lucide-react'
+import { FileText, Sparkles, RefreshCw, Upload, Target, TrendingUp } from 'lucide-react'
 import React, { useState, useRef } from 'react'
+import axios from 'axios'
+import { useAuth } from '@clerk/clerk-react'
+import toast from 'react-hot-toast'
+import Markdown from 'react-markdown'
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000';
 
 const ReviewResume = () => {
-  const [selectedResume, setSelectedResume] = useState(null)
-  const [additionalNotes, setAdditionalNotes] = useState('')
-  const [reviewResult, setReviewResult] = useState(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [dragActive, setDragActive] = useState(false)
-  const fileInputRef = useRef(null)
+  // ✅ Simple function-style state (matches your “similar to this” snippet)
+  const [input, setInput] = useState(null);     // PDF file
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');   // Markdown returned by API
 
-  const reviewCategories = [
-    { name: 'Format & Structure', icon: '📄' },
-    { name: 'Content Quality', icon: '✍️' },
-    { name: 'Skills & Experience', icon: '🎯' },
-    { name: 'ATS Optimization', icon: '🤖' }
-  ]
+  // UI state to keep your original styles/UX
+  const [dragActive, setDragActive] = useState(false);
+  const [selectedResume, setSelectedResume] = useState(null); // { file, name, size, type }
+  const [additionalNotes, setAdditionalNotes] = useState('');
+  const fileInputRef = useRef(null);
+
+  const { getToken } = useAuth();
 
   const handleFileSelect = (file) => {
-    if (file && file.type === 'application/pdf') {
-      setSelectedResume({
-        file: file,
-        name: file.name,
-        size: file.size,
-        type: file.type
-      })
-      setReviewResult(null) // Clear previous result
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file.');
+      return;
     }
-  }
-
-  const handleDrag = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
-    } else if (e.type === "dragleave") {
-      setDragActive(false)
-    }
-  }
-
-  const handleDrop = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelect(e.dataTransfer.files[0])
-    }
-  }
+    setInput(file); // ✅ your simple “input” state
+    setSelectedResume({
+      file,
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+    setContent(''); // clear previous result
+  };
 
   const handleFileInputChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      handleFileSelect(e.target.files[0])
+      handleFileSelect(e.target.files[0]);
     }
-  }
+  };
 
-  const onSubmitHandler = async () => {
-    if (!selectedResume) {
-      alert('Please upload a resume first');
-      return;
-    }
-    
-    setIsAnalyzing(true)
-    
-    console.log('Analyzing resume:', { 
-      resume: selectedResume.name, 
-      notes: additionalNotes 
-    })
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 3500))
-    
-    // Mock review result
-    const mockReview = {
-      overallScore: 85,
-      strengths: [
-        "Strong technical skills section with relevant technologies",
-        "Clear work experience with quantified achievements",
-        "Professional formatting and consistent structure",
-        "Good use of action verbs and industry keywords"
-      ],
-      improvements: [
-        "Add a professional summary at the top",
-        "Include more quantified results in experience section",
-        "Consider adding relevant certifications",
-        "Optimize for ATS with better keyword distribution"
-      ],
-      categories: [
-        { name: 'Format & Structure', score: 90, feedback: 'Well-organized with clear sections and consistent formatting' },
-        { name: 'Content Quality', score: 82, feedback: 'Good content but could benefit from more specific achievements' },
-        { name: 'Skills & Experience', score: 88, feedback: 'Relevant skills well-presented, experience shows clear progression' },
-        { name: 'ATS Optimization', score: 80, feedback: 'Good keyword usage but could be improved for better ATS compatibility' }
-      ],
-      recommendations: [
-        "Add a 2-3 line professional summary highlighting your key value proposition",
-        "Quantify more achievements with specific numbers, percentages, or dollar amounts",
-        "Consider adding a 'Key Achievements' or 'Notable Projects' section",
-        "Review job descriptions for target roles to optimize keyword usage"
-      ]
-    }
-    
-    setReviewResult(mockReview)
-    setIsAnalyzing(false)
-  }
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
+    if (e.type === 'dragleave') setDragActive(false);
+  };
 
-  const startNewReview = () => {
-    setReviewResult(null)
-    setSelectedResume(null)
-    setAdditionalNotes('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
-  }
+    if (!bytes) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+  };
 
-  const getScoreColor = (score) => {
-    if (score >= 85) return 'text-green-600 bg-green-100'
-    if (score >= 70) return 'text-yellow-600 bg-yellow-100'
-    return 'text-red-600 bg-red-100'
-  }
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      if (!input) {
+        toast.error('Please upload a resume first.');
+        return;
+      }
+      setLoading(true);
 
-  const getScoreBarColor = (score) => {
-    if (score >= 85) return 'bg-green-500'
-    if (score >= 70) return 'bg-yellow-500'
-    return 'bg-red-500'
-  }
+      const formData = new FormData();
+      formData.append('resume', input);
+      // Optional: include notes if your backend wants them
+      if (additionalNotes.trim()) formData.append('notes', additionalNotes.trim());
+
+      const token = await getToken();
+      const { data } = await axios.post('/api/ai/resume-review', formData, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          // Let axios set the multipart boundary automatically
+        },
+      });
+
+      if (data?.success) {
+        setContent(data.content || '');
+      } else {
+        toast.error(data?.message || 'Failed to analyze resume.');
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || 'Request failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startNewReview = () => {
+    setContent('');
+    setInput(null);
+    setSelectedResume(null);
+    setAdditionalNotes('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   return (
     <div className='min-h-full p-6 bg-gradient-to-br from-slate-50 via-green-50 to-blue-50'>
@@ -158,7 +135,7 @@ const ReviewResume = () => {
         </div>
 
         <div className='flex flex-col lg:flex-row items-start gap-8'>
-          {/* Left Column - Configuration */}
+          {/* Left Column - Configuration (styles unchanged) */}
           <div className='w-full lg:w-96 lg:flex-shrink-0'>
             <div className='bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8'>
               <div className='flex items-center gap-3 mb-8'>
@@ -168,8 +145,8 @@ const ReviewResume = () => {
                 <h2 className='text-2xl font-bold text-gray-900'>Review Settings</h2>
               </div>
               
-              <div className='space-y-8'>
-                {/* File Upload Area */}
+              <form onSubmit={onSubmitHandler} className='space-y-8'>
+                {/* File Upload Area (styles unchanged) */}
                 <div>
                   <label className='block text-sm font-semibold text-gray-700 mb-3'>Upload Resume</label>
                   <div
@@ -221,11 +198,10 @@ const ReviewResume = () => {
                   </div>
                 </div>
 
-                {/* Additional Notes */}
+                {/* Additional Notes (kept for your style; optional) */}
                 <div>
                   <label className='block text-sm font-semibold text-gray-700 mb-3'>
-                    Additional Focus Areas 
-                    <span className='text-gray-500 font-normal'>(Optional)</span>
+                    Additional Focus Areas <span className='text-gray-500 font-normal'>(Optional)</span>
                   </label>
                   <textarea
                     value={additionalNotes}
@@ -240,11 +216,11 @@ const ReviewResume = () => {
                 </div>
 
                 <button 
-                  onClick={onSubmitHandler}
-                  disabled={isAnalyzing || !selectedResume}
+                  type="submit"
+                  disabled={loading || !input}
                   className="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-4 rounded-2xl font-semibold text-lg hover:from-green-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  {isAnalyzing ? (
+                  {loading ? (
                     <>
                       <RefreshCw className="w-5 h-5 animate-spin" />
                       Analyzing Resume...
@@ -256,11 +232,11 @@ const ReviewResume = () => {
                     </>
                   )}
                 </button>
-              </div>
+              </form>
             </div> 
           </div>
 
-          {/* Right Column - Review Results */}
+          {/* Right Column - Review Results (styles unchanged around the container/header) */}
           <div className='flex-1 min-w-0 bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl min-h-[600px] flex flex-col'>
             {/* Header */}
             <div className='flex items-center justify-between p-8 border-b border-gray-100'>
@@ -271,7 +247,7 @@ const ReviewResume = () => {
                 <h2 className='text-2xl font-bold text-gray-900'>Review Results</h2>
               </div>
               
-              {reviewResult && (
+              {content && (
                 <button
                   onClick={startNewReview}
                   className='flex items-center gap-2 px-4 py-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-xl transition-colors duration-200 font-medium'
@@ -282,94 +258,14 @@ const ReviewResume = () => {
               )}
             </div>
             
-            {/* Content Area */}
+            {/* Content Area -> show Markdown like your simple version */}
             <div className='flex-1 overflow-y-auto'>
-              {reviewResult ? (
-                <div className='p-8 space-y-8'>
-                  {/* Overall Score */}
-                  <div className='text-center bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border border-green-100'>
-                    <div className='flex items-center justify-center gap-2 mb-2'>
-                      <User className='w-5 h-5 text-green-600' />
-                      <h3 className='font-semibold text-gray-900'>Overall Resume Score</h3>
-                    </div>
-                    <div className={`text-4xl font-bold mb-2 ${getScoreColor(reviewResult.overallScore).split(' ')[0]}`}>
-                      {reviewResult.overallScore}/100
-                    </div>
-                    <div className='w-full bg-gray-200 rounded-full h-2'>
-                      <div 
-                        className={`h-2 rounded-full ${getScoreBarColor(reviewResult.overallScore)}`}
-                        style={{ width: `${reviewResult.overallScore}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Category Scores */}
-                  <div>
-                    <h3 className='font-semibold text-gray-900 mb-4'>Category Breakdown</h3>
-                    <div className='grid md:grid-cols-2 gap-4'>
-                      {reviewResult.categories.map((category, index) => (
-                        <div key={index} className='bg-white/60 rounded-xl p-4 border border-gray-100'>
-                          <div className='flex items-center justify-between mb-2'>
-                            <span className='font-medium text-gray-900'>{category.name}</span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getScoreColor(category.score)}`}>
-                              {category.score}/100
-                            </span>
-                          </div>
-                          <p className='text-xs text-gray-600'>{category.feedback}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Strengths */}
-                  <div>
-                    <div className='flex items-center gap-2 mb-4'>
-                      <CheckCircle className='w-5 h-5 text-green-600' />
-                      <h3 className='font-semibold text-gray-900'>Strengths</h3>
-                    </div>
-                    <div className='space-y-2'>
-                      {reviewResult.strengths.map((strength, index) => (
-                        <div key={index} className='flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-100'>
-                          <CheckCircle className='w-4 h-4 text-green-600 mt-0.5 flex-shrink-0' />
-                          <span className='text-sm text-gray-700'>{strength}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Areas for Improvement */}
-                  <div>
-                    <div className='flex items-center gap-2 mb-4'>
-                      <AlertCircle className='w-5 h-5 text-orange-600' />
-                      <h3 className='font-semibold text-gray-900'>Areas for Improvement</h3>
-                    </div>
-                    <div className='space-y-2'>
-                      {reviewResult.improvements.map((improvement, index) => (
-                        <div key={index} className='flex items-start gap-3 p-3 bg-orange-50 rounded-xl border border-orange-100'>
-                          <AlertCircle className='w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0' />
-                          <span className='text-sm text-gray-700'>{improvement}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Recommendations */}
-                  <div>
-                    <div className='flex items-center gap-2 mb-4'>
-                      <Sparkles className='w-5 h-5 text-blue-600' />
-                      <h3 className='font-semibold text-gray-900'>Action Recommendations</h3>
-                    </div>
-                    <div className='space-y-3'>
-                      {reviewResult.recommendations.map((recommendation, index) => (
-                        <div key={index} className='p-4 bg-blue-50 rounded-xl border border-blue-100'>
-                          <div className='flex items-start gap-3'>
-                            <span className='flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold'>
-                              {index + 1}
-                            </span>
-                            <span className='text-sm text-gray-700 font-medium'>{recommendation}</span>
-                          </div>
-                        </div>
-                      ))}
+              {content ? (
+                <div className='p-8'>
+                  <div className='text-sm text-slate-600 max-w-none'>
+                    {/* Optional reset wrapper if you use it elsewhere */}
+                    <div className='reset-tw'>
+                      <Markdown>{content}</Markdown>
                     </div>
                   </div>
                 </div>
@@ -388,6 +284,7 @@ const ReviewResume = () => {
               )}
             </div>
           </div>
+          {/* /Right */}
         </div>
       </div>
     </div>
