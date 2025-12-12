@@ -71,7 +71,7 @@ NeuraFlow was built to resemble real production systems — not tutorial-style d
 
 ## Live Demo
 
-🔗 https://YOUR-DEPLOYED-URL-HERE
+🔗 https://nueraflow2.vercel.app/
 
 ---
 
